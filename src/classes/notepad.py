@@ -16,6 +16,8 @@ class Notepad(QMainWindow):
 
         saveAction= QAction('Save', self)
         saveAction.triggered.connect(self.saveFile)
+        createAction = QAction('Save as', self)
+        createAction.triggered.connect(self.createFile)
         readAction = QAction('Read', self)
         readAction.triggered.connect(self.readFile)
 
@@ -26,6 +28,7 @@ class Notepad(QMainWindow):
 
 
         self.fileMenu.addAction(saveAction)
+        self.fileMenu.addAction(createAction)
         self.fileMenu.addAction(readAction)
 
         self.setGeometry(100, 100, 800, 600)
@@ -89,3 +92,17 @@ class Notepad(QMainWindow):
             except Exception as e:
                 QMessageBox.critical(self, 'Error', f'An error occurred while opening the file: {str(e)}')
 
+    def createFile(self):
+        filePath, _ = QFileDialog.getSaveFileName(self, 'Create File', filter="Text files (*.txt)")
+        if filePath:
+            try:
+                # Dodanie rozszerzenia .txt, jeśli nie zostało podane ręcznie przez użytkownika
+                if not filePath.endswith(".txt"):
+                    filePath += ".txt"
+
+                # Tworzenie nowego pliku tekstowego
+                with open(filePath, 'w') as file:
+                    pass  # Plik jest tworzony pusty
+                QMessageBox.information(self, 'Success', 'File created successfully!')
+            except Exception as e:
+                QMessageBox.critical(self, 'Error', f'An error occurred while creating the file: {str(e)}')
