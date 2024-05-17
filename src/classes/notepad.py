@@ -20,21 +20,26 @@ class Notepad(QMainWindow):
         createAction.triggered.connect(self.createFile)
         readAction = QAction('Read', self)
         readAction.triggered.connect(self.readFile)
+        preferenceAction = QAction('Config', self)
+        preferenceAction.triggered.connect(self.pref_window)
 
         # Create custom menu bar
         menuBar = self.menuBar()
         self.fileMenu = menuBar.addMenu('File')
-
+        self.fileMenu2 = menuBar.addMenu('Preference')
 
 
         self.fileMenu.addAction(saveAction)
         self.fileMenu.addAction(createAction)
         self.fileMenu.addAction(readAction)
-
+        
+        # Do menu Preference
+        self.fileMenu2.addAction(preferenceAction)
+        
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle('Notepad')
         self.setStyleSheet(self.readStyleSheet())
-
+        
         #Status bar
         self.statusBar().showMessage("")
         self.statusBar().setStyleSheet("border :0px solid black;")
@@ -106,3 +111,44 @@ class Notepad(QMainWindow):
                 QMessageBox.information(self, 'Success', 'File created successfully!')
             except Exception as e:
                 QMessageBox.critical(self, 'Error', f'An error occurred while creating the file: {str(e)}')
+    # Otwieranie okna z config
+    def pref_window(self):
+        self.w = PrefWindow()
+        self.w.show()
+        self.close()
+
+#Okno configu 
+class PrefWindow(QWidget):
+    
+    def __init__(self):
+        super().__init__()
+
+        self.init_ui()
+    
+    def init_ui(self):
+        self.textEdit = QTextEdit()
+        layout = QVBoxLayout()
+
+        self.label1 = QLabel("Jakiś skrót:" )
+        layout.addWidget(self.label1)
+        self.label2 = QLabel("Jakiś skrót" )
+        layout.addWidget(self.label2)
+        self.label3 = QLabel("Jakiś skrót" )
+        layout.addWidget(self.label3)
+
+        self.button = QPushButton("Zatwierdź zmiany")
+        self.button.clicked.connect(self.changes)
+        layout.addWidget(self.button)
+
+        self.setLayout(layout)
+
+        self.setGeometry(300, 250, 500, 300)
+        self.setWindowTitle('Config')
+    
+    #powrót do Notatnika
+    def changes(self):
+        
+        self.w=Notepad()
+        self.w.show()
+        self.close()
+
