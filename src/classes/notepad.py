@@ -1,9 +1,10 @@
 
 
 
-import os
+import os, json
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTextEdit, QMessageBox, QVBoxLayout, QWidget, QPushButton, QFileDialog, QMenuBar, QLabel, QStatusBar
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QKeySequence, QShortcut
+
 class Notepad(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -65,8 +66,70 @@ class Notepad(QMainWindow):
             self.char_count_label.setText(f"Znaki: {char_count}")
         
         self.textEdit.textChanged.connect(update_char_count)
-        
+
         self.show()
+        self.load_shortcuts()
+
+    def load_shortcuts(self):
+        try:
+            current_dir = os.getcwd()
+            absolutePath = os.path.join(current_dir, "data/config.json")
+            with open(absolutePath, 'r') as f:
+                shortcuts = json.load(f)
+                for action, key in shortcuts.items():
+                    self.create_shortcut(key, getattr(self, action))
+        except Exception as e:
+            print(f"Failed to load shortcuts: {e}")
+
+    def create_shortcut(self, key_sequence, callback):
+        shortcut = QShortcut(QKeySequence(key_sequence), self)
+        shortcut.activated.connect(callback)
+
+
+
+    def go_to_previous_blank_line(self):
+        cursor = self.textEdit.textCursor()
+        moved = cursor.movePosition(cursor.MoveOperation.Up)
+        cursor.movePosition(cursor.MoveOperation.StartOfLine)
+        while moved and cursor.block().text().strip() != "":
+            moved = cursor.movePosition(cursor.MoveOperation.Up)
+            cursor.movePosition(cursor.MoveOperation.StartOfLine)
+        self.textEdit.setTextCursor(cursor)
+
+    def go_to_next_blank_line(self):
+        cursor = self.textEdit.textCursor()
+        moved = cursor.movePosition(cursor.MoveOperation.Down)
+        cursor.movePosition(cursor.MoveOperation.StartOfLine)
+        while moved and cursor.block().text().strip() != "":
+            moved = cursor.movePosition(cursor.MoveOperation.Down)
+            cursor.movePosition(cursor.MoveOperation.StartOfLine)
+        self.textEdit.setTextCursor(cursor)
+
+
+
+    def go_to_previous_sentence(self):
+        cursor = self.textEdit.textCursor()
+        while not cursor.atStart() and cursor.document().characterAt(cursor.position() - 1) != '.':
+            cursor.movePosition(cursor.MoveOperation.PreviousCharacter)
+        cursor.movePosition(cursor.MoveOperation.PreviousCharacter)
+        self.textEdit.setTextCursor(cursor)
+
+    def go_to_next_sentence(self):
+        cursor = self.textEdit.textCursor()
+        while not cursor.atEnd() and cursor.document().characterAt(cursor.position()) != '.':
+            cursor.movePosition(cursor.MoveOperation.NextCharacter)
+        cursor.movePosition(cursor.MoveOperation.NextCharacter)
+        self.textEdit.setTextCursor(cursor)
+
+    def go_to_top(self):
+        cursor = self.textEdit.textCursor()
+        cursor.movePosition(cursor.MoveOperation.Start)
+        self.textEdit.setTextCursor(cursor)
+
+    def go_to_bottom(self):
+        cursor = self.textEdit.textCursor()
+        cursor.movePosition(cursor.MoveOperation.End)
+        self.textEdit.setTextCursor(cursor)
 
     def readStyleSheet(self, filePath="styles/style.css"):
         current_dir = os.getcwd()

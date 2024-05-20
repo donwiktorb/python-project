@@ -1,0 +1,8 @@
+{
+  "go_to_previous_blank_line": "Ctrl+Up",
+  "go_to_next_blank_line": "Ctrl+Down",
+  "go_to_previous_sentence": "Alt+Left",
+  "go_to_next_sentence": "Alt+Right",
+  "go_to_top": "Ctrl+Home",
+  "go_to_bottom": "Ctrl+End"
+}
