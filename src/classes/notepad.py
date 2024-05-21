@@ -3,7 +3,7 @@
 
 import os, json
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTextEdit, QMessageBox, QVBoxLayout, QWidget, QPushButton, QFileDialog, QMenuBar, QLabel, QStatusBar
-from PyQt6.QtGui import QAction, QKeySequence, QShortcut
+from PyQt6.QtGui import QAction, QKeySequence, QShortcut, QTextCursor
 
 class Notepad(QMainWindow):
     def __init__(self):
@@ -69,6 +69,17 @@ class Notepad(QMainWindow):
 
         self.show()
         self.load_shortcuts()
+        self.load_words()
+
+    
+    def load_words(self):
+        try:
+            current_dir = os.getcwd()
+            absolutePath = os.path.join(current_dir, "data/shortcuts.json")
+            with open(absolutePath, 'r') as f:
+                self.words = json.load(f)
+        except Exception as e:
+            print(f"Failed to load words: {e}")
 
     def load_shortcuts(self):
         try:
@@ -84,6 +95,15 @@ class Notepad(QMainWindow):
     def create_shortcut(self, key_sequence, callback):
         shortcut = QShortcut(QKeySequence(key_sequence), self)
         shortcut.activated.connect(callback)
+
+    def expand_shortcut(self):
+        cursor = self.textEdit.textCursor()
+        cursor.select(cursor.SelectionType.WordUnderCursor)
+        txt = cursor.selectedText().strip()
+        if txt in self.words:
+            cursor.beginEditBlock()
+            cursor.insertText(self.words[txt])
+            cursor.endEditBlock()
 
 
 
@@ -178,7 +198,7 @@ class Notepad(QMainWindow):
     def pref_window(self):
         self.w = PrefWindow()
         self.w.show()
-        self.close()
+        #self.close()
 
 #Okno configu 
 class PrefWindow(QWidget):
@@ -211,7 +231,7 @@ class PrefWindow(QWidget):
     #powrót do Notatnika
     def changes(self):
         
-        self.w=Notepad()
-        self.w.show()
+        #self.w=Notepad()
+        #self.w.show()
         self.close()
 
