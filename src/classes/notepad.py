@@ -21,21 +21,21 @@ class Notepad(QMainWindow):
         createAction.triggered.connect(self.createFile)
         readAction = QAction('Read', self)
         readAction.triggered.connect(self.readFile)
-        preferenceAction = QAction('Config', self)
-        preferenceAction.triggered.connect(self.pref_window)
+        infoAction = QAction('Shortcuts', self)
+        infoAction.triggered.connect(self.info_window)
 
         # Create custom menu bar
         menuBar = self.menuBar()
         self.fileMenu = menuBar.addMenu('File')
-        self.fileMenu2 = menuBar.addMenu('Preference')
+        self.fileMenu2 = menuBar.addMenu('Info')
 
 
         self.fileMenu.addAction(saveAction)
         self.fileMenu.addAction(createAction)
         self.fileMenu.addAction(readAction)
         
-        # Do menu Preference
-        self.fileMenu2.addAction(preferenceAction)
+        # Do menu info
+        self.fileMenu2.addAction(infoAction)
         
         self.setGeometry(100, 100, 800, 600)
         self.setWindowTitle('Notepad')
@@ -194,14 +194,13 @@ class Notepad(QMainWindow):
                 QMessageBox.information(self, 'Success', 'File created successfully!')
             except Exception as e:
                 QMessageBox.critical(self, 'Error', f'An error occurred while creating the file: {str(e)}')
-    # Otwieranie okna z config
-    def pref_window(self):
-        self.w = PrefWindow()
+    # Otwieranie okna z shortcut
+    def info_window(self):
+        self.w = infoWindow()
         self.w.show()
-        #self.close()
 
-#Okno configu 
-class PrefWindow(QWidget):
+#Okno info 
+class infoWindow(QWidget):
     
     def __init__(self):
         super().__init__()
@@ -212,26 +211,11 @@ class PrefWindow(QWidget):
         self.textEdit = QTextEdit()
         layout = QVBoxLayout()
 
-        self.label1 = QLabel("Jakiś skrót:" )
+        self.label1 = QLabel("Skróty:\nCtrl+Up - poprzednia pusta linia\nCtrl+Down - następna pusta linia\nAlt+Left - poprzednie zdanie\nAlt+Right - następne zdanie\nCtrl+Home - na góre\nCtrl+End - na dół\nAlt+1 - szybkie stawienie słowa" )
         layout.addWidget(self.label1)
-        self.label2 = QLabel("Jakiś skrót" )
+        self.label2 = QLabel("Słowa do szybkiego stawiania:\n re - requirements\n he - hello\n wi - windows\n wo - word")
         layout.addWidget(self.label2)
-        self.label3 = QLabel("Jakiś skrót" )
-        layout.addWidget(self.label3)
-
-        self.button = QPushButton("Zatwierdź zmiany")
-        self.button.clicked.connect(self.changes)
-        layout.addWidget(self.button)
-
         self.setLayout(layout)
 
         self.setGeometry(300, 250, 500, 300)
-        self.setWindowTitle('Config')
-    
-    #powrót do Notatnika
-    def changes(self):
-        
-        #self.w=Notepad()
-        #self.w.show()
-        self.close()
-
+        self.setWindowTitle('Shortcuts')
